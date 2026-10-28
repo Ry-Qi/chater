@@ -14,6 +14,7 @@ gen/
 
 # 生成的工程文件
 *.cmake
+!server/cmake/*.cmake
 *.ninja
 
 # 编译产物

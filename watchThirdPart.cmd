@@ -18,6 +18,6 @@ ln -sf compile_commands.json /home/qzr/gitee/chat-server-cpp/compile_commands.js
 -s:创建软链接(symbolic link)
 -f:强制覆盖已存在的目标(不提示)
 
- sudo rabbitmqctl list_queues name messages consumers
+sudo rabbitmqctl list_queues name messages consumers
 
- sudo rabbitmqctl list_consumers
+sudo rabbitmqctl list_consumers
