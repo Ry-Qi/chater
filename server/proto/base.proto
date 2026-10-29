@@ -36,35 +36,35 @@ message StringMessageInfo {
 }
 
 message ImageMessageInfo {
- //图片文件 id,客户端发送的时候不用设置，由 transmit 服务器进行设置后交给 storage 的时候设置
+ //图片文件 id，客户端发送的时候不用设置，由 transmit 服务器进行设置后交给 storage 的时候设置
  optional string file_id = 1;
- //图片数据，在 ES 中存储消息的时候只要 id 不要文件数据, 服务端转发的时候需要原样转发
+ //图片数据，在 ES 中存储消息的时候只要 id 不要文件数据，服务端转发的时候需要原样转发
  optional bytes image_content = 2;
 }
 
 message FileMessageInfo {
- optional string file_id = 1;//文件 id,客户端发送的时候不用设置
+ optional string file_id = 1;//文件 id，客户端发送的时候不用设置
  int64 file_size = 2;//文件大小
  string file_name = 3;//文件名称
- //文件数据，在 ES 中存储消息的时候只要 id 和元信息，不要文件数据, 服务端转发的时候也不需要填充
+ //文件数据，在 ES 中存储消息的时候只要 id 和元信息，不要文件数据，服务端转发的时候也不需要填充
  optional bytes file_contents = 4;
 }
 
 message SpeechMessageInfo {
- //语音文件 id,客户端发送的时候不用设置
+ //语音文件 id，客户端发送的时候不用设置
  optional string file_id = 1;
- //文件数据，在 ES 中存储消息的时候只要 id 不要文件数据, 服务端转发的时候也不需要填充
+ //文件数据，在 ES 中存储消息的时候只要 id 不要文件数据，服务端转发的时候也不需要填充
  optional bytes file_contents = 2;
 }
 
 message MessageContent {
-	MessageType message_type = 1; //消息类型
-	oneof msg_content {
-		StringMessageInfo string_message = 2;//文字消息
-		FileMessageInfo file_message = 3;//文件消息
-		SpeechMessageInfo speech_message = 4;//语音消息
-		ImageMessageInfo image_message = 5;//图片消息
-	};
+    MessageType message_type = 1; //消息类型
+    oneof msg_content {
+        StringMessageInfo string_message = 2;//文字消息
+        FileMessageInfo file_message = 3;//文件消息
+        SpeechMessageInfo speech_message = 4;//语音消息
+        ImageMessageInfo image_message = 5;//图片消息
+    };
 }
 //消息结构
 message MessageInfo {
@@ -73,7 +73,7 @@ message MessageInfo {
  int64 timestamp = 3;//消息产生时间
  UserInfo sender = 4;//消息发送者信息
  MessageContent message = 5;
- }
+}
 
 message FileDownloadData {
  string file_id = 1;

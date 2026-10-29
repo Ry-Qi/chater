@@ -10,20 +10,20 @@ enum NotifyType {
  CHAT_MESSAGE_NOTIFY = 3;
  FRIEND_REMOVE_NOTIFY = 4;
  NOTIFY_SYNC = 5; // 多端同步通知：客户端收到后触发 get_message_sync
-} 
+}
 message NotifyFriendAddApply {
  UserInfo user_info = 1; //申请人信息
-} 
+}
 message NotifyFriendAddProcess {
  bool agree = 1;
  UserInfo user_info = 2; //处理人信息
-} 
+}
 message NotifyFriendRemove {
  string user_id = 1; //删除自己的用户 ID
-} 
+}
 message NotifyNewChatSession {
  ChatSessionInfo chat_session_info = 1; //新建会话信息
-} 
+}
 message NotifyNewMessage {
  MessageInfo message_info = 1; //新消息
 }
@@ -42,7 +42,7 @@ message NotifyMessage {
     NotifyNewChatSession new_chat_session_info = 5;//会话信息
     NotifyNewMessage new_message_info = 6;//消息信息
     NotifySync notify_sync = 8;//多端同步通知
- } 
+ }
 }
 
 // websocket 客户端回执（ACK）消息

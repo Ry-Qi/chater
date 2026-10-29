@@ -29,7 +29,7 @@ gen/
 *.pb.cpp
 *odb.*
 client_*
-speech_server	
+speech_server
 speech_client
 user_client
 user_server
@@ -44,3 +44,6 @@ compile_commands.json
 
 
 .claude
+
+.clangd
+.gitignore

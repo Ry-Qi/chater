@@ -263,7 +263,7 @@ private:
       LOG_DEBUG("非正常连接状态，结束连接保活");
       return;
     }
-    conn->ping("");
+    conn->ping("I am here.");
     _ws_server.set_timer(60000,
                          std::bind(&GatewayServer::keepAlive, this, conn));
   }
@@ -1564,9 +1564,9 @@ private:
 
   void NewMessage(const httplib::Request &request,
                   httplib::Response &response) {
-    NewMessageReq req;
-    NewMessageRsp rsp;               // 这是给客户端的响应
-    GetTransmitTargetRsp target_rsp; // 这是请求子服务的响应
+    NewMessageReq req;               // 转发子服务的请求
+    NewMessageRsp rsp;               // 给客户端的响应
+    GetTransmitTargetRsp target_rsp; // 转发子服务的响应
     auto err_response = [&req, &rsp,
                          &response](const std::string &errmsg) -> void {
       rsp.set_success(false);
@@ -1602,7 +1602,7 @@ private:
     }
 
     // 4. 若业务处理成功 ---
-    // 且获取被申请方长连接成功，则向被申请方进行好友申请事件通知
+    // 且获取被申请方长连接成功，则向被申请方进行通知
     if (target_rsp.success()) {
       for (int i = 0; i < target_rsp.target_id_list_size(); i++) {
         std::string notify_uid = target_rsp.target_id_list(i);
