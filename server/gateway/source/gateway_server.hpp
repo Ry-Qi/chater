@@ -1195,16 +1195,15 @@ private:
     if (rsp.success()) {
       for (int i = 0; i < rsp.target_id_list_size(); i++) {
         std::string notify_uid = rsp.target_id_list(i);
-        // 目标通知 uid 是自己：不通知当前设备，若其它设备在线则发送 notify_sync
-        // 触发拉取增量
-        if (notify_uid == *uid) {
-          _NotifySyncToOtherDevices(*uid, ssid);
-          continue;
-        }
         NotifyMessage notify;
         notify.set_notify_type(NotifyType::CHAT_MESSAGE_NOTIFY);
         auto msg_info = notify.mutable_new_message_info();
         msg_info->mutable_message_info()->CopyFrom(rsp.message());
+        // 目标通知 uid 是自己：当前设备已有该消息，直接推给其它在线设备
+        if (notify_uid == *uid) {
+          _PushNotifyToOtherDevices(*uid, ssid, notify);
+          continue;
+        }
         _PushNotifyOrStore(req.request_id(), notify_uid, notify);
       }
     }
@@ -1606,16 +1605,15 @@ private:
     if (target_rsp.success()) {
       for (int i = 0; i < target_rsp.target_id_list_size(); i++) {
         std::string notify_uid = target_rsp.target_id_list(i);
-        // 目标通知 uid 是自己：不通知当前设备，若其它设备在线则发送 notify_sync
-        // 触发拉取增量
-        if (notify_uid == *uid) {
-          _NotifySyncToOtherDevices(*uid, ssid);
-          continue;
-        }
         NotifyMessage notify;
         notify.set_notify_type(NotifyType::CHAT_MESSAGE_NOTIFY);
         auto msg_info = notify.mutable_new_message_info();
         msg_info->mutable_message_info()->CopyFrom(target_rsp.message());
+        // 目标通知 uid 是自己：当前设备已有该消息，直接推给其它在线设备
+        if (notify_uid == *uid) {
+          _PushNotifyToOtherDevices(*uid, ssid, notify);
+          continue;
+        }
         _PushNotifyOrStore(req.request_id(), notify_uid, notify);
       }
     }
@@ -1711,20 +1709,17 @@ private:
     LOG_DEBUG("{} {} 当前设备已发送 notify_sync", uid, ssid);
   }
 
-  // 若同一uid 存在其它设备在线，则向其它设备发送 notify_sync（用于触发
-  // get_message_sync） 若用户有离线设备登录,网关可以调用此方法向其它设备发送
-  // notify_sync，以便触发客户端的get_message_sync
-  // 也可以让客户端在登录后主动调用 get_message_sync 拉取增量消息
-  void _NotifySyncToOtherDevices(const std::string &uid,
-                                 const std::string &self_ssid) {
+  // 向同一 uid 的其它在线设备直接推送通知（跳过当前设备，不做离线存储）
+  // 离线设备在重连鉴权后会收到 notify_sync 并拉取增量，无需在此入库
+  void _PushNotifyToOtherDevices(const std::string &uid,
+                                 const std::string &self_ssid,
+                                 NotifyMessage &notify) {
     auto conns = _connections->connections(uid);
     if (conns.empty())
       return;
-
-    NotifyMessage notify;
-    notify.set_notify_type(NotifyType::NOTIFY_SYNC);
-    // oneof 需要明确选择（即使为空消息也可）
-    notify.mutable_notify_sync();
+    if (notify.notify_event_id().empty()) {
+      notify.set_notify_event_id(Uuid());
+    }
     auto payload = notify.SerializeAsString();
 
     for (auto &conn : conns) {
